@@ -110,11 +110,6 @@
 			}
 		});
 
-		// Check  change
-		$('#date_from, #date_to').change(function(){
-			initChart();
-		});
-
 		// Check date change
 		$('#date_from, #date_to').datetimepicker({
 			onChangeDateTime:function(dp, $input){
@@ -135,38 +130,19 @@
 		});
 	}
 
-	function loadCurrency(crypto){
-		// Get currency
-		var currency = $(crypto).attr('data-currency');
-		var compare  = $('input[name="compare"]:checked').val();
-		var url      = 'https://www.worldcoinindex.com/widget/renderWidget?size=medium&from='+currency+'&to='+compare+'&clearstyle=true';
+	function loadCurrency(){
+		// Set script URL
+		src = 'https://files.coinmarketcap.com/static/widget/currency.js';
 
-		// Check iframe
-		if(!$('#'+currency).length){
-			// Create iframe
-			$('<iframe>', {
-				src        : url,
-				id         : currency,
-				width      : '300px',
-				height     : '240px',
-				frameborder: '0px',
-				scrolling  : 'no'
-			}).appendTo(crypto);
-
-		}else{
-			// Reload iframe
-			$('#'+currency).attr('src', url);
-		}
+		// Reload script
+		$('script[src="'+src+'"]').remove();
+        $('<script>').attr('src', src).appendTo('body');
 
 		// Repeat
 		window.setTimeout(function(){
-			loadCurrency(crypto);
+			loadCurrency();
 		}, 10000);
 	}
-
-	$('.crypto').each(function(index, crypto){
-		loadCurrency(crypto);
-	});
 
 	function d($value){
 		// Debug	

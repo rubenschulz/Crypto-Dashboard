@@ -26,8 +26,7 @@
 
 
 /*** Set variables ***/
-	$api_url  = 'https://www.worldcoinindex.com/apiservice/json';
-	$api_key  = 'k05AiKN0nfPHdZzIUFozCZfW4';
+	$api_url  = 'https://api.coinmarketcap.com/v1/ticker/';
 	$response = array();
 	$data     = array();
 	$sql      = '';
@@ -43,7 +42,7 @@
 	$header[]       = 'Content-Type: application/json';
 
 	// Set options
-	curl_setopt($curl, CURLOPT_URL,            $api_url.'?key='.$api_key);
+	curl_setopt($curl, CURLOPT_URL,            $api_url.'?limit=0&convert=EUR');
 	curl_setopt($curl, CURLOPT_HTTPHEADER,     $header);
 	curl_setopt($curl, CURLOPT_HEADER,         true); 
 	curl_setopt($curl, CURLOPT_VERBOSE,        true); 
@@ -63,6 +62,7 @@
 
 	// Decode response
 	$response       = json_decode($response);
+
 
 
 /*** Databaase ***/
@@ -96,10 +96,7 @@
 				name,
 				price_btc,
 				price_usd,
-				price_cny,
 				price_eur,
-				price_gbp,
-				price_rur,
 				volume_24h,
 				timestamp
 			) VALUES (
@@ -107,10 +104,7 @@
 				:name,
 				:price_btc,
 				:price_usd,
-				:price_cny,
 				:price_eur,
-				:price_gbp,
-				:price_rur,
 				:volume_24h,
 				:timestamp
 			)
@@ -120,19 +114,16 @@
 		$statement = $database->prepare($sql);
 
 		// Loop through markets
-		foreach($response->Markets as $market){
+		foreach($response as $market){
 			// Check if market in transactions
-			if(in_array($market->Label, $transactions)){
+			if(in_array($market->symbol, $transactions)){
 				// Bind values
-				$statement->bindValue(':label',      $market->Label);
-				$statement->bindValue(':name',       $market->Name);
-				$statement->bindValue(':price_btc',  $market->Price_btc);
-				$statement->bindValue(':price_usd',  $market->Price_usd);
-				$statement->bindValue(':price_cny',  $market->Price_cny);
-				$statement->bindValue(':price_eur',  $market->Price_eur);
-				$statement->bindValue(':price_gbp',  $market->Price_gbp);
-				$statement->bindValue(':price_rur',  $market->Price_rur);
-				$statement->bindValue(':volume_24h', $market->Volume_24h);
+				$statement->bindValue(':label',      $market->symbol);
+				$statement->bindValue(':name',       $market->name);
+				$statement->bindValue(':price_btc',  $market->price_btc);
+				$statement->bindValue(':price_usd',  $market->price_usd);
+				$statement->bindValue(':price_eur',  $market->price_eur);
+				$statement->bindValue(':volume_24h', $market->{'24h_volume_eur'});
 				$statement->bindValue(':timestamp',  date('Y-m-d H:i:00'));
 
 				// Execute statement
