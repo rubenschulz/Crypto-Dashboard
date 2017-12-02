@@ -42,7 +42,7 @@
 	$header[]       = 'Content-Type: application/json';
 
 	// Set options
-	curl_setopt($curl, CURLOPT_URL,            $api_url.'?convert=EUR');
+	curl_setopt($curl, CURLOPT_URL,            $api_url.'?limit=0&convert=EUR');
 	curl_setopt($curl, CURLOPT_HTTPHEADER,     $header);
 	curl_setopt($curl, CURLOPT_HEADER,         true); 
 	curl_setopt($curl, CURLOPT_VERBOSE,        true); 
