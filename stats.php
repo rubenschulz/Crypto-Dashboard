@@ -96,9 +96,9 @@
 			foreach($data[$transaction['label']] as $row){
 				// Set row
 				$response[$row['date']]['markets'][$transaction['label']] = $row;
-				$response[$row['date']]['total']['minimum']               = !empty($response[$row['date']]['total']['minimum']) ? $response[$row['date']]['total']['minimum'] + $row['minimum'] : $row['minimum'];
-				$response[$row['date']]['total']['maximum']               = !empty($response[$row['date']]['total']['maximum']) ? $response[$row['date']]['total']['maximum'] + $row['maximum'] : $row['maximum'];
-				$response[$row['date']]['total']['average']               = !empty($response[$row['date']]['total']['average']) ? $response[$row['date']]['total']['average'] + $row['average'] : $row['average'];
+				$response[$row['date']]['total']['minimum']               = !empty($response[$row['date']]['total']['minimum']) ? $response[$row['date']]['total']['minimum'] + ($row['amount'] * $row['minimum']) : $row['amount'] * $row['minimum'];
+				$response[$row['date']]['total']['maximum']               = !empty($response[$row['date']]['total']['maximum']) ? $response[$row['date']]['total']['maximum'] + ($row['amount'] * $row['maximum']) : $row['amount'] * $row['maximum'];
+				$response[$row['date']]['total']['average']               = !empty($response[$row['date']]['total']['average']) ? $response[$row['date']]['total']['average'] + ($row['amount'] * $row['average']) : $row['amount'] * $row['average'];
 			}
 		}
 
@@ -138,18 +138,18 @@
 			</tr>
 			<tr>
 				<th></th>
-				<th align='right'>Minimum</th>
-				<th align='right'>Maximum</th>
-				<th align='right'>Average</th>
+				<th align='right'><nobr>Minimum</nobr></th>
+				<th align='right'><nobr>Maximum</nobr></th>
+				<th align='right'><nobr>Average</nobr></th>
 				<?php 
 					$array_keys = array_keys($response);
 					foreach($response[end($array_keys)]['markets'] as $key => $row){ 
 				?>
 					<th>&nbsp;&nbsp;</th>
-					<th align='right'>Amount</th>
-					<th align='right'>Minimum</th>
-					<th align='right'>Maximum</th>
-					<th align='right'>Average</th>
+					<th align='right'><nobr>Amount</nobr></th>
+					<th align='right'><nobr>Minimum</nobr></th>
+					<th align='right'><nobr>Maximum</nobr></th>
+					<th align='right'><nobr>Average</nobr></th>
 				<?php } ?>
 			</tr>
 		</thead>
@@ -158,16 +158,16 @@
 			<?php foreach($response as $key => $row){ ?>
 				<tr>
 					<td align='right'><nobr><?php print($key); ?></nobr></td>
-					<td align='right'><nobr>€ <?php print(number_format($row['total']['minimum'], 2)); ?></nobr></td>
-					<td align='right'><nobr>€ <?php print(number_format($row['total']['maximum'], 2)); ?></nobr></td>
-					<td align='right'><nobr>€ <?php print(number_format($row['total']['average'], 2)); ?></nobr></td>
+					<td align='right'><nobr><?php print('€ '.number_format($row['total']['minimum'], 2, ',', '.')); ?></nobr></td>
+					<td align='right'><nobr><?php print('€ '.number_format($row['total']['maximum'], 2, ',', '.')); ?></nobr></td>
+					<td align='right'><nobr><?php print('€ '.number_format($row['total']['average'], 2, ',', '.')); ?></nobr></td>
 
 					<?php foreach($row['markets'] as $column){ ?>
 						<td>&nbsp;&nbsp;</td>
-						<td align='right'><nobr><?php print(!empty($column['amount']) ?      number_format($column['amount'], 5)                      : '-'); ?></nobr></td>
-						<td align='right'><nobr><?php print(!empty($column['amount']) ? '€ '.number_format($column['amount'] * $column['minimum'], 2) : '-'); ?></nobr></td>
-						<td align='right'><nobr><?php print(!empty($column['amount']) ? '€ '.number_format($column['amount'] * $column['maximum'], 2) : '-'); ?></nobr></td>
-						<td align='right'><nobr><?php print(!empty($column['amount']) ? '€ '.number_format($column['amount'] * $column['average'], 2) : '-'); ?></nobr></td>
+						<td align='right'><nobr><?php print(!empty($column['amount']) ?      number_format($column['amount'], 5, ',', '.')                      : '-'); ?></nobr></td>
+						<td align='right'><nobr><?php print(!empty($column['amount']) ? '€ '.number_format($column['amount'] * $column['minimum'], 2, ',', '.') : '-'); ?></nobr></td>
+						<td align='right'><nobr><?php print(!empty($column['amount']) ? '€ '.number_format($column['amount'] * $column['maximum'], 2, ',', '.') : '-'); ?></nobr></td>
+						<td align='right'><nobr><?php print(!empty($column['amount']) ? '€ '.number_format($column['amount'] * $column['average'], 2, ',', '.') : '-'); ?></nobr></td>
 					<?php } ?>
 				</tr>
 			<?php } ?>
