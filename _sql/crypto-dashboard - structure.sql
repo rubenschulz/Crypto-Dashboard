@@ -65,11 +65,8 @@ CREATE TABLE `markets` (
   `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `price_btc` decimal(15,8) NOT NULL,
   `price_usd` decimal(15,8) NOT NULL,
-  `price_cny` decimal(15,8) NOT NULL,
   `price_eur` decimal(15,8) NOT NULL,
-  `price_gbp` decimal(15,8) NOT NULL,
-  `price_rur` decimal(15,8) NOT NULL,
-  `volume_24h` decimal(15,8) NOT NULL,
+  `volume_24h` decimal(15,5) NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
 
