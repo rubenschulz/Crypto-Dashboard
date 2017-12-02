@@ -74,29 +74,14 @@
 		<hr />
 
 		<div class='grid-x'>
-			<div class='small-12 medium-9 large-10 cell currencies'>
-				<div class='crypto' data-currency='BTC'></div>
-				<div class='crypto' data-currency='ETH'></div>
-				<div class='crypto' data-currency='LTC'></div>
-				<div class='crypto' data-currency='XRP'></div>
-			</div>
-			<div class='small-12 medium-3 large-2 cell compare'>
-				<h2>Compare to:</h2>
-				
-				<label>
-					<input type='radio' name='compare' value='BTC'>
-					Bitcoin
-				</label>
-				<label>
-					<input type='radio' name='compare' value='USD'>
-					$ US Dollar
-				</label>
-				<label>
-					<input type='radio' name='compare' value='EUR' checked>
-					€ Euro
-				</label>
-			</div>
+
+			<div class='coinmarketcap-currency-widget crypto' data-currency='bitcoin'  data-base='EUR' data-secondary='USD' data-rank='false' data-marketcap='false' data-volume='false'></div>
+			<div class='coinmarketcap-currency-widget crypto' data-currency='ethereum' data-base='EUR' data-secondary='USD' data-rank='false' data-marketcap='false' data-volume='false'></div>
+			<div class='coinmarketcap-currency-widget crypto' data-currency='litecoin' data-base='EUR' data-secondary='USD' data-rank='false' data-marketcap='false' data-volume='false'></div>
+			<div class='coinmarketcap-currency-widget crypto' data-currency='ripple'   data-base='EUR' data-secondary='USD' data-rank='false' data-marketcap='false' data-volume='false'></div>
+
 		</div>
+
 	</div>
 
 	<script src='./scripts/jquery/jquery-2.1.4.min.js'                       type='text/javascript'></script>
@@ -107,6 +92,9 @@
 		// Init chart
 		initChart();
 		initDatepicker();
+
+		// Load currency
+		loadCurrency();
 	</script>
 	
 </body>
