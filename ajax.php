@@ -25,6 +25,100 @@
 
 
 
+/*** Functions ***/
+	function simplify($points, $tolerance = 1, $highestQuality = false) {
+		if (count($points) < 2) return $points;
+		$sqTolerance = $tolerance * $tolerance;
+		if (!$highestQuality) {
+			$points = simplifyRadialDistance($points, $sqTolerance);
+		}
+		$points = simplifyDouglasPeucker($points, $sqTolerance);
+		return $points;
+	}
+
+	function getSquareDistance($p1, $p2) {
+		$dx = $p1['timestamp'] - $p2['timestamp'];
+		$dy = $p1['value'] - $p2['value'];
+		return $dx * $dx + $dy * $dy;
+	}
+
+	function getSquareSegmentDistance($p, $p1, $p2) {
+		$x = $p1['timestamp'];
+		$y = $p1['value'];
+		$dx = $p2['timestamp'] - $x;
+		$dy = $p2['value'] - $y;
+		if ($dx <> 0 || $dy <> 0) {
+			$t = (($p['timestamp'] - $x) * $dx + ($p['value'] - $y) * $dy) / ($dx * $dx + $dy * $dy);
+			if ($t > 1) {
+				$x = $p2['timestamp'];
+				$y = $p2['value'];
+			} else if ($t > 0) {
+				$x += $dx * $t;
+				$y += $dy * $t;
+			}
+		}
+		$dx = $p['timestamp'] - $x;
+		$dy = $p['value'] - $y;
+		return $dx * $dx + $dy * $dy;
+	}
+
+	function simplifyRadialDistance($points, $sqTolerance) { // distance-based simplification	
+		$len = count($points);
+		$prevPoint = $points[0];
+		$newPoints = array($prevPoint);
+		$point = null;
+		
+		for ($i = 1; $i < $len; $i++) {
+			$point = $points[$i];
+			if (getSquareDistance($point, $prevPoint) > $sqTolerance) {
+				array_push($newPoints, $point);
+				$prevPoint = $point;
+			}
+		}
+		if ($prevPoint !== $point) {
+			array_push($newPoints, $point);
+		}
+		return $newPoints;
+	}
+
+	// simplification using optimized Douglas-Peucker algorithm with recursion elimination
+	function simplifyDouglasPeucker($points, $sqTolerance) {
+		$len = count($points);
+		$markers = array_fill ( 0 , $len - 1, null);
+		$first = 0;
+		$last = $len - 1;
+		$firstStack = array();
+		$lastStack  = array();
+		$newPoints  = array();
+		$markers[$first] = $markers[$last] = 1;
+		while ($last) {
+			$maxSqDist = 0;
+			for ($i = $first + 1; $i < $last; $i++) {
+				$sqDist = getSquareSegmentDistance($points[$i], $points[$first], $points[$last]);
+				if ($sqDist > $maxSqDist) {
+					$index = $i;
+					$maxSqDist = $sqDist;
+				}
+			}
+			if ($maxSqDist > $sqTolerance) {
+				$markers[$index] = 1;
+				array_push($firstStack, $first);
+				array_push($lastStack, $index);
+				array_push($firstStack, $index);
+				array_push($lastStack, $last);
+			}
+			$first = array_pop($firstStack);
+			$last = array_pop($lastStack);
+		}
+		for ($i = 0; $i < $len; $i++) {
+			if ($markers[$i]) {
+				array_push($newPoints, $points[$i]);
+			}
+		}
+		return $newPoints;
+	}
+
+
 /*** Set variables ***/
 	$response = array();
 	$data     = array();
@@ -79,6 +173,7 @@
 				WHERE 1 = 1
 					AND intervals.timestamp >= '".$_REQUEST['date_from']." ".$_REQUEST['time_from']."'
 					AND intervals.timestamp <= '".$_REQUEST['date_to']." ".$_REQUEST['time_to']."'
+					AND intervals.timestamp <= NOW()
 				GROUP BY 
 					intervals.timestamp
 				ORDER BY
@@ -90,6 +185,10 @@
 			if(empty(end($data[$transaction['label']])['value'])){
 				unset($data[$transaction['label']]);
 			}
+
+			// Simplify graph
+			$tolerance = (strtotime($_REQUEST['date_to']) - strtotime($_REQUEST['date_from'])) / (60 * 60 * 24) / 60;
+//			!empty($data[$transaction['label']]) ? $data[$transaction['label']] = simplify($data[$transaction['label']], $tolerance) : '';
 		}
 
 		// Set response
