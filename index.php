@@ -33,19 +33,9 @@
 			height: 			750px;
 		}
 
-		.crypto { 
+		.coinmarketcap-currency-widget { 
 			padding:			1rem;
 			float:				left;
-		}
-
-		.compare {
-			background-color:	#EEEEEE;
-
-			padding:			1rem;
-		}
-
-		.compare label {
-			padding:			1rem;
 		}
 
 	</style>
@@ -75,10 +65,10 @@
 
 		<div class='grid-x'>
 
-			<div class='coinmarketcap-currency-widget crypto' data-currency='bitcoin'  data-base='EUR' data-secondary='USD' data-rank='false' data-marketcap='false' data-volume='false'></div>
-			<div class='coinmarketcap-currency-widget crypto' data-currency='ethereum' data-base='EUR' data-secondary='USD' data-rank='false' data-marketcap='false' data-volume='false'></div>
-			<div class='coinmarketcap-currency-widget crypto' data-currency='litecoin' data-base='EUR' data-secondary='USD' data-rank='false' data-marketcap='false' data-volume='false'></div>
-			<div class='coinmarketcap-currency-widget crypto' data-currency='ripple'   data-base='EUR' data-secondary='USD' data-rank='false' data-marketcap='false' data-volume='false'></div>
+			<div class='coinmarketcap-currency-widget small-12 medium-6 large-3 cell' data-currency='bitcoin'  data-base='EUR' data-secondary='USD' data-rank='false' data-marketcap='false' data-volume='false'></div>
+			<div class='coinmarketcap-currency-widget small-12 medium-6 large-3 cell' data-currency='ethereum' data-base='EUR' data-secondary='USD' data-rank='false' data-marketcap='false' data-volume='false'></div>
+			<div class='coinmarketcap-currency-widget small-12 medium-6 large-3 cell' data-currency='litecoin' data-base='EUR' data-secondary='USD' data-rank='false' data-marketcap='false' data-volume='false'></div>
+			<div class='coinmarketcap-currency-widget small-12 medium-6 large-3 cell' data-currency='ripple'   data-base='EUR' data-secondary='USD' data-rank='false' data-marketcap='false' data-volume='false'></div>
 
 		</div>
 
