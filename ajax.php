@@ -62,6 +62,7 @@
 				SELECT 
 					markets.label,
 					markets.name,
+					transactions.amount,
 					DATE_FORMAT(intervals.timestamp, '%d-%m-%Y %H:%i') AS timestamp,
 					markets.price_eur * SUM(transactions.amount)       AS value
 				FROM

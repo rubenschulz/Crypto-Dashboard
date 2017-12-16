@@ -54,7 +54,7 @@
 							if(index == 0){
 								labels.push(value.timestamp);
 							}
-							data.push(value.value);
+							data.push(value.value ? Math.round(value.value * 100) / 100 : null);
 
 							// Add to total
 							if(key == (values.length - 1)){
@@ -65,7 +65,7 @@
 						// Add dataset
 						if(values.length){
 							datasets.push({
-								label           : values[values.length - 1].name+': € '+Math.round(data[data.length-1] * 100) / 100,
+								label           : values[values.length - 1].name+' ('+Math.round(values[values.length - 1].amount * 100) / 100+')',
 								data            : data,
 								borderColor     : colors[index],
 								backgroundColor : colors[index],
@@ -90,11 +90,27 @@
 								datasets: datasets
 							},
 							options: {
-								responsive: true,
-								maintainAspectRatio: false,
-								title     : {
+								responsive          : true,
+								maintainAspectRatio : false,
+								title : {
 									display : true,
 									text    : 'Crypto dashboard'
+								},
+								tooltips : {
+									enabled   : true,
+									mode      : 'index',
+									callbacks: {
+										label: function(tooltipItem, data){
+											return data.datasets[tooltipItem.datasetIndex].label+': € '+Math.round(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index] * 100) / 100;
+										},
+										footer: function(tooltipItems, data){
+											var total = 0;
+											tooltipItems.forEach(function(tooltipItem){
+												total += Number(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]);
+											});
+											return 'Total: € '+Math.round(total * 100) / 100;
+										},
+									}
 								}
 							}
 						});
