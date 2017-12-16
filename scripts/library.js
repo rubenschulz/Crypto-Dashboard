@@ -99,6 +99,7 @@
 								tooltips : {
 									enabled   : true,
 									mode      : 'index',
+									position  : 'nearest',
 									callbacks: {
 										label: function(tooltipItem, data){
 											return data.datasets[tooltipItem.datasetIndex].label+': € '+Math.round(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index] * 100) / 100;
