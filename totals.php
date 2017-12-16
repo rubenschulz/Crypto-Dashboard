@@ -51,6 +51,26 @@
 		$transactions = $database->query($sql['get_transactions'])->fetchAll(PDO::FETCH_ASSOC);
 
 		foreach($transactions as $transaction){
+/*			// Get investment
+			$sql['get_investment_'.$transaction['label']] = "
+				SELECT 
+					transactions.label,
+					transactions.timestamp,
+					transactions.amount,
+					transactions.amount * markets.price_eur	AS price,
+					markets.price_eur                       AS rate
+				FROM
+					transactions,
+					markets
+				WHERE 1 = 1
+					AND markets.label     = transactions.label
+					AND markets.timestamp = transactions.timestamp
+			";
+			$data[$transaction['label']] = $database->query($sql['get_investment_'.$transaction['label']])->fetchAll(PDO::FETCH_ASSOC);
+
+print('<pre>');
+print_r($data);
+*/
 			// Get history
 			$sql['get_history_'.$transaction['label']] = "
 				SELECT 
@@ -118,15 +138,39 @@
 	<meta charset='utf-8'>
 	<meta name='viewport' content='width=device-width, initial-scale=1.0' />
 	<link href='style/foundation/foundation.min.css' rel='stylesheet' type='text/css' media='screen' />
+	<style>
+		html,
+		body {
+			height: 			100%;
+		}
+
+		h2 {
+			font-size:			1.5rem;
+		}
+
+		h3 {
+			font-size:			1.25rem;
+		}
+	</style>
 	<title>Crypto Dashboard</title>
 </head>
 
 <body>
 
+	<div class='grid-container'>
+		<div class='grid-x'>
+			<div class='small-12 cell'>
+				<h2>Daily total value</h2>
+				<a href='index.php'>Show charts</a>
+
+			</div>
+		</div>
+	</div>
+
 	<table>
 		<thead>
 			<tr>
-				<th><strong>Date</strong></th>
+				<th></th>
 				<th colspan='4' class='text-center'>Total</th>
 				<?php 
 					$array_keys = array_keys($response);
@@ -137,7 +181,7 @@
 				<?php } ?>
 			</tr>
 			<tr>
-				<th></th>
+				<th><strong>Date</strong></th>
 				<th align='right'><nobr>Minimum</nobr></th>
 				<th align='right'><nobr>Maximum</nobr></th>
 				<th align='right'><nobr>Average</nobr></th>

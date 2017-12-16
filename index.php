@@ -58,6 +58,8 @@
 
 				<h3>To date</h3>
 				<input type='text' name='date_to'   id='date_to'   value='<?php !empty($_REQUEST['date_to'])   ? print($_REQUEST['date_to'])   : print(date('Y-m-d')); ?>' class='datepicker' />
+			
+				<a href='totals.php'>Show daily totals</a>
 			</div>
 		</div>
 
