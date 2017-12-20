@@ -24,6 +24,10 @@
 			height: 			750px;
 		}
 
+		.totals {
+			padding-bottom:		1rem;
+		}
+
 		.options {
 			background-color:	#EEEEEE;
 
@@ -46,12 +50,12 @@
 
 	<div class='grid-container'>
 		<div class='grid-x'>
-			<div class='small-12 medium-9 large-10 cell chart'>
+			<div class='small-12 medium-8 large-9 cell chart'>
 				<canvas id='chart'></canvas>
 			</div>
-			<div class='small-12 medium-3 large-2 cell options'>
+			<div class='small-12 medium-4 large-3 cell options'>
 				<h2>Current total value</h2>
-				<span id='total'></span>
+				<div id='totals' class='totals'></div>
 
 				<h3>From date</h3>
 				<input type='text' name='date_from' id='date_from' value='<?php !empty($_REQUEST['date_from']) ? print($_REQUEST['date_from']) : print(date('Y-m-d', strtotime('7 days ago'))); ?>' class='datepicker' />

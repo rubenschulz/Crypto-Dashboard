@@ -43,6 +43,9 @@
 					var index    = 0;
 					var total    = 0;
 
+					// Clear totals
+					$('#totals').text('');
+
 					// Loop through market
 					$.each(response.data, function(label, values){
 						// Build labels and data
@@ -65,7 +68,7 @@
 						// Add dataset
 						if(values.length){
 							datasets.push({
-								label           : values[values.length - 1].name+' ('+Math.round(values[values.length - 1].amount * 100) / 100+')',
+								label           : values[values.length - 1].name+' ('+label+')',
 								data            : data,
 								borderColor     : colors[index],
 								backgroundColor : colors[index],
@@ -73,12 +76,15 @@
 							});
 						}
 
+						// Add total
+						$('#totals').append('<div><strong>'+label+'</strong> ('+Math.round(values[values.length - 1].amount * 100) / 100+') € '+Math.round(values[values.length - 1].value * 100) / 100)+'</div>';
+
 						// Add index
 						index++;
 					});
 
 					// Add total
-					$('#total').text('€ '+Math.round(total * 100) / 100);
+					$('#totals').append('<div><strong>Total</strong> € '+Math.round(total * 100) / 100)+'</div';
 
 					// Check if chart exists
 					if(typeof historyChart === 'undefined'){
