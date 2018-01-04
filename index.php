@@ -4,37 +4,24 @@
 <head>
 	<meta charset='utf-8'>
 	<meta name='viewport' content='width=device-width, initial-scale=1.0' />
-	<link href='style/foundation/foundation.min.css'            rel='stylesheet' type='text/css' media='screen' />
-	<link href='style/datetimepicker/jquery.datetimepicker.css' rel='stylesheet' type='text/css' media='screen' />
+	<link href='https://cdnjs.cloudflare.com/ajax/libs/foundation/6.4.3/css/foundation.min.css' rel='stylesheet' />
 	<style>
 		html,
 		body {
 			height: 			100%;
 		}
 
-		h2 {
+		h1 {
 			font-size:			1.5rem;
+			text-align: 		center;
 		}
 
-		h3 {
+		h2 {
 			font-size:			1.25rem;
-		}
-
-		.chart {
-			height: 			750px;
 		}
 
 		.totals {
 			padding-bottom:		1rem;
-		}
-
-		.options {
-			background-color:	#EEEEEE;
-
-			padding-left:		1rem;
-			padding-right:		1rem;
-
-			height: 			750px;
 		}
 
 		.coinmarketcap-currency-widget { 
@@ -50,20 +37,11 @@
 
 	<div class='grid-container'>
 		<div class='grid-x'>
-			<div class='small-12 medium-8 large-9 cell chart'>
-				<canvas id='chart'></canvas>
-			</div>
-			<div class='small-12 medium-4 large-3 cell options'>
-				<h2>Current total value</h2>
-				<div id='totals' class='totals'></div>
-
-				<h3>From date</h3>
-				<input type='text' name='date_from' id='date_from' value='<?php !empty($_REQUEST['date_from']) ? print($_REQUEST['date_from']) : print(date('Y-m-d', strtotime('7 days ago'))); ?>' class='datepicker' />
-
-				<h3>To date</h3>
-				<input type='text' name='date_to'   id='date_to'   value='<?php !empty($_REQUEST['date_to'])   ? print($_REQUEST['date_to'])   : print(date('Y-m-d')); ?>' class='datepicker' />
-			
+			<div class='small-12 cell chart'>
+				<h1>Crypto Dashboard</h1>
 				<a href='totals.php'>Show daily totals</a>
+
+				<div id='container'></div>
 			</div>
 		</div>
 
@@ -80,18 +58,9 @@
 
 	</div>
 
-	<script src='./scripts/jquery/jquery-2.1.4.min.js'                       type='text/javascript'></script>
-	<script src='./scripts/datetimepicker/jquery.datetimepicker.full.min.js' type='text/javascript'></script>
-	<script src='./scripts/chart/chart.js'                                   type='text/javascript'></script>
-	<script src='./scripts/library.js'                                       type='text/javascript'></script>
-	<script type='text/javascript'>
-		// Init chart
-		initChart();
-		initDatepicker();
-
-		// Load currency
-		loadCurrency();
-	</script>
+	<script src='https://code.jquery.com/jquery-3.1.1.min.js'></script>
+	<script src='https://code.highcharts.com/stock/highstock.js'></script>
+	<script src='./scripts/app.js' type='text/javascript'></script>
 	
 </body>
 </html>

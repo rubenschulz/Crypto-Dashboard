@@ -38,12 +38,6 @@
 		$database = new PDO('mysql:host='.DATABASE_HOST.';dbname='.DATABASE_NAME, DATABASE_USERNAME, DATABASE_PASSWORD);
 		$database->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-		// Clean REQUEST
-		$_REQUEST['date_from'] = !empty($_REQUEST['date_from']) ? $_REQUEST['date_from'] : date('Y-m-d', strtotime('7 days ago'));
-		$_REQUEST['time_from'] = !empty($_REQUEST['time_from']) ? $_REQUEST['time_from'] : '00:00:00';
-		$_REQUEST['date_to']   = !empty($_REQUEST['date_to'])   ? $_REQUEST['date_to']   : date('Y-m-d');
-		$_REQUEST['time_to']   = !empty($_REQUEST['time_to'])   ? $_REQUEST['time_to']   : ($_REQUEST['date_to'] == date('Y-m-d') ? date('H:i:s') : '23:59:59');
-
 		// Get transactions
 		$sql['get_transactions'] = "
 			SELECT 
@@ -78,8 +72,7 @@
 					markets.label            = transactions.label
 					AND markets.timestamp   >= transactions.timestamp
 				WHERE 1 = 1
-					AND intervals.timestamp >= '".$_REQUEST['date_from']." ".$_REQUEST['time_from']."'
-					AND intervals.timestamp <= '".$_REQUEST['date_to']." ".$_REQUEST['time_to']."'
+					AND intervals.timestamp <= '".date('Y-m-d H:i:s')."'
 				GROUP BY 
 					intervals.timestamp
 				ORDER BY
