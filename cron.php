@@ -28,8 +28,9 @@
 /*** Set variables ***/
 	$api_url  = 'https://api.coinmarketcap.com/v1/ticker/';
 	$response = array();
+	$output   = array();
 	$data     = array();
-	$sql      = '';
+	$sql      = array();
 
 
 
@@ -90,7 +91,7 @@
 		}
 
 		// Build SQL
-		$sql = "
+		$sql['save_market'] = "
 			INSERT INTO markets (
 				label,
 				name,
@@ -111,7 +112,7 @@
 		";
 
 		// Prepare statement
-		$statement = $database->prepare($sql);
+		$statement = $database->prepare($sql['save_market']);
 
 		// Loop through markets
 		foreach($response as $market){
@@ -130,6 +131,59 @@
 				$statement->execute();
 			}
 		}
+
+		// Set memory limit
+		ini_set('memory_limit', '256M');
+
+		// Loop through transactions
+		foreach($transactions as $transaction){
+			// Get history
+			$sql['get_history_'.$transaction] = "
+				SELECT 
+					markets.label,
+					markets.name,
+					UNIX_TIMESTAMP(intervals.timestamp) * 1000   AS timestamp,
+					SUM(transactions.amount)                     AS amount,
+					markets.price_eur * SUM(transactions.amount) AS value
+				FROM
+					intervals
+				LEFT JOIN 
+					markets
+				ON 
+					intervals.timestamp      = markets.timestamp
+					AND markets.label        = '".$transaction."'
+				LEFT JOIN
+					transactions
+				ON 
+					markets.label            = transactions.label
+					AND markets.timestamp   >= transactions.timestamp
+				WHERE 1 = 1
+					AND intervals.timestamp <= '".date('Y-m-d H:i:s')."'
+					AND transactions.amount IS NOT NULL
+				GROUP BY 
+					intervals.timestamp
+				ORDER BY
+					intervals.timestamp ASC
+			";
+			$data[$transaction] = $database->query($sql['get_history_'.$transaction])->fetchAll(PDO::FETCH_ASSOC);
+
+			if(!empty($data[$transaction])){
+				// Set output
+				$output[$transaction]         = array();
+				$output[$transaction]['name'] = $data[$transaction][0]['name'];
+				$output[$transaction]['data'] = array();
+
+				// Loop trough transactions
+				foreach($data[$transaction] as $key => $value){
+					$output[$transaction]['data'][] = array((int)$value['timestamp'], (float)$value['value'], (float)$value['amount']);
+				}
+			}
+		}
+
+		// Write JSON
+		$fp = fopen('data/data.json', 'w');
+		fwrite($fp, json_encode($output));
+		fclose($fp);
 
 		// Close connection
 		$database = null;

@@ -9,28 +9,88 @@
 /*** General functions ***/
 	function loadChart(){
 		// Load data
-		$.getJSON('ajax.php', function(response){
+		$.getJSON('data/data.json', function(response){
+			// Create series array
+			seriesOptions = [];
+			$.each(response, function(label, data){
+				seriesOptions.push(data)
+			});
 
-d(response.data);
 			// Draw chart
 			Highcharts.stockChart('container', {
+				// Set series
+				series: seriesOptions,
 
+				// Set chart options
+				title: {
+					text: 'Crypto Dashboard'
+				},
+				subtitle: {
+					text: 'To the moooon!'
+				},
+				chart: {
+					height: '65%',
+				},
+				credits: {
+					enabled: false
+				},          
+
+				// Set axis options
+				yAxis: {
+					labels: {
+						formatter: function(){
+							return '€ '+Highcharts.numberFormat(this.value, 2, ',', '.');
+						}
+					},
+					minorTickInterval: 250
+				},
+
+				// Set legend options
+				legend: {
+					labelFormatter: function() {
+					return '<span style="color:'+this.color+'">'+this.name+': € '+Highcharts.numberFormat(this.yData[this.yData.length - 1], 2, ',', '.')+'</span>';
+					},
+					enabled: true
+				},
+
+				// Set tooltip options
+				tooltip: {
+					formatter: function(){
+						total = 0;
+						tooltip_html  = '<table>';
+						tooltip_html += '<tr><td colspan="2" style="font-weight:bold; text-align: center">'+ Highcharts.dateFormat('%d %B %Y %H:%M', new Date(this.x)) +'</td></tr>';
+
+						this.points.forEach(function(point){
+							tooltip_html += '<tr><td style="font-weight:bold; color:'+ point.series.color +'">'+ point.series.name +':</td><td style="text-align: right">€ '+Highcharts.numberFormat(point.y, 2, ',', '.')+'</td></tr>';
+							total        += point.y;
+						});
+
+						tooltip_html += '<tr><td style="font-weight:bold;">Total</td><td style="text-align: right; font-weight:bold;">€ '+Highcharts.numberFormat(total, 2, ',', '.')+'</td></tr>'
+						tooltip_html += '</table>';
+
+						return tooltip_html;
+					},
+					shared: true,
+					useHTML: true
+				},
+
+				// Set range selector
 				rangeSelector: {
 					buttons: [{
-						type: 'hour',
-						count: 1,
-						text: '1h'
-					}, {
 						type: 'day',
 						count: 1,
 						text: '1D'
+					}, {
+						type: 'week',
+						count: 1,
+						text: '1W'
 					}, {
 						type: 'month',
 						count: 1,
 						text: '1M'
 					}, {
-						type: 'quarter',
-						count: 1,
+						type: 'month',
+						count: 3,
 						text: '3M'
 					}, {
 						type: 'ytd',
@@ -45,175 +105,32 @@ d(response.data);
 						count: 1,
 						text: 'All'
 					}],
-					selected: 1,
-					inputEnabled: false
+					selected: 1
 				},
 
-				yAxis: {
-					labels: {
-						formatter: function () {
-							return (this.value > 0 ? ' + ' : '') + this.value + '%';
-						}
-					},
-					plotLines: [{
-						value: 0,
-						width: 2,
-						color: 'silver'
-					}]
-				},
-
+				// Set navigator options
 				plotOptions: {
 					series: {
-						compare: 'percent',
 						showInNavigator: true
 					}
 				},
 
-				tooltip: {
-					pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.change}%)<br/>',
-					valueDecimals: 2,
-					split: true
-				},
-
-				series: response.data
-
-/*				series: [{
-					name: 'AAPL',
-					data: data
-				},
-				{
-					name: 'AAPL',
-					data: data
-				}]
-*/			});
-		});
-
-
-
-/*
-		// Define chart
-		var colors	= ['#FF6384', '#5959E6', '#2BABAB', '#8C4D15', '#8BC34A', '#607D8B', '#009688', '#FF0000', '#D69F4A', '#3035FF', '#E8680C', '#000000'];
-		var date_from = $('#date_from').val();
-		var date_to   = $('#date_to').val();
-
-		// Make AJAX call
-		$.ajax({
-			url	  : 'ajax.php',
-			type	 : 'post', 
-			dataType : 'json',
-			data	 : {
-				date_from : date_from,
-				date_to   : date_to
-			},
-			success: function(response){
-				// Set debug information
-				debug.push('Function - initChart - Success');
-
-				// Reload the datatable
-				if(response != ''){
-					// Build datasets
-					var datasets = [];
-					var labels   = [];
-					var index	= 0;
-					var total	= 0;
-
-					// Clear totals
-					$('#totals').text('');
-
-					// Loop through market
-					$.each(response.data, function(label, values){
-						// Build labels and data
-						var data	 = [];
-
-						// Loop through values
-						$.each(values, function(key, value){
-							// Add labels
-							if(index == 0){
-								labels.push(value.timestamp);
+				// Set repsonvie options
+				responsive: {
+					rules: [{
+						condition: {
+							maxWidth: 640
+						},
+						chartOptions: {
+							chart: {
+								height: '150%'
 							}
-							data.push(value.value ? Math.round(value.value * 100) / 100 : null);
-
-							// Add to total
-							if(key == (values.length - 1)){
-								total += Number(value.value);
-							}
-						});
-
-						// Add dataset
-						if(values.length){
-							datasets.push({
-								label		   : values[values.length - 1].name+' ('+label+')',
-								data			: data,
-								borderColor	 : colors[index],
-								backgroundColor : colors[index],
-								fill			: false
-							});
 						}
-
-						// Add total
-						$('#totals').append('<div><strong>'+label+'</strong> ('+Math.round(values[values.length - 1].amount * 100) / 100+') € '+Math.round(values[values.length - 1].value * 100) / 100)+'</div>';
-
-						// Add index
-						index++;
-					});
-
-					// Add total
-					$('#totals').append('<div><strong>Total</strong> € '+Math.round(total * 100) / 100)+'</div';
-
-					// Check if chart exists
-					if(typeof historyChart === 'undefined'){
-
-	   					// Draw chart
-						historyChart = new Chart(chart, {
-							type   : 'line',
-							data   : {
-								labels  : labels,
-								datasets: datasets
-							},
-							options: {
-								responsive		  : true,
-								maintainAspectRatio : false,
-								title : {
-									display : true,
-									text	: 'Crypto dashboard'
-								},
-								tooltips : {
-									enabled   : true,
-									mode	  : 'index',
-									position  : 'nearest',
-									callbacks: {
-										label: function(tooltipItem, data){
-											return data.datasets[tooltipItem.datasetIndex].label+': € '+Math.round(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index] * 100) / 100;
-										},
-										footer: function(tooltipItems, data){
-											var total = 0;
-											tooltipItems.forEach(function(tooltipItem){
-												total += Number(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]);
-											});
-											return 'Total: € '+Math.round(total * 100) / 100;
-										},
-									}
-								}
-							}
-						});
-					}else{
-						// Update chart
-						historyChart.data.labels   = labels;
-						historyChart.data.datasets = datasets;
-						historyChart.update();
-
-					}
+					}]
 				}
-			}
-		});
 
-		// Check date change
-		$('#date_from, #date_to').datetimepicker({
-			onChangeDateTime:function(dp, $input){
-				initChart();
-			}
+			});
 		});
-*/
 	}
 
 	function loadCurrency(){

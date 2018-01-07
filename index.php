@@ -37,10 +37,7 @@
 
 	<div class='grid-container'>
 		<div class='grid-x'>
-			<div class='small-12 cell chart'>
-				<h1>Crypto Dashboard</h1>
-				<a href='totals.php'>Show daily totals</a>
-
+			<div class='small-12 cell'>
 				<div id='container'></div>
 			</div>
 		</div>
@@ -60,6 +57,7 @@
 
 	<script src='https://code.jquery.com/jquery-3.1.1.min.js'></script>
 	<script src='https://code.highcharts.com/stock/highstock.js'></script>
+	<script src='http://code.highcharts.com/modules/exporting.js'></script>
 	<script src='./scripts/app.js' type='text/javascript'></script>
 	
 </body>
