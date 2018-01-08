@@ -13,8 +13,23 @@
 			// Create series array
 			seriesOptions = [];
 			$.each(response, function(label, data){
-				seriesOptions.push(data)
+				// Add to chart series
+				seriesOptions.push(data);
+
+				// Set widget name
+				widget_name = data.name.toLowerCase().replace(' ', '-');
+												
+				// Create widget
+				$('#widgets').children().first()
+					.clone()
+					.appendTo('#widgets')
+					.attr('data-currency', widget_name)
+					.addClass('coinmarketcap-currency-widget')
+					.removeClass('hide');
 			});
+
+			// Load widgets
+			$('<script>').attr('src', src).appendTo('body');
 
 			// Draw chart
 			Highcharts.stockChart('container', {
@@ -145,11 +160,6 @@
 		window.setTimeout(function(){
 			loadCurrency();
 		}, 10000);
-	}
-
-	function d($value){
-		// Debug	
-		console.log($value);		
 	}
 
 

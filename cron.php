@@ -132,6 +132,9 @@
 			}
 		}
 
+		// Delete Bitgem
+		$database->query('DELETE FROM markets WHERE name = "Bitgem"');
+
 		// Set memory limit
 		ini_set('memory_limit', '256M');
 
