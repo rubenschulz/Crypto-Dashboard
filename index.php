@@ -3,8 +3,9 @@
 <html>
 <head>
 	<meta charset='utf-8'>
-	<meta name='viewport' content='width=device-width, initial-scale=1.0' />
-	<link href='https://cdnjs.cloudflare.com/ajax/libs/foundation/6.4.3/css/foundation.min.css' rel='stylesheet' />
+	<meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=no' />
+	<link href='https://cdnjs.cloudflare.com/ajax/libs/foundation/6.4.3/css/foundation.min.css'  rel='stylesheet' />
+	<link href='https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/base/jquery-ui.css' rel='stylesheet' />
 	<style>
 		html,
 		body {
@@ -21,7 +22,10 @@
 		}
 
 		.coinmarketcap-currency-widget { 
-			padding:			1rem;
+			padding-left:		1rem;
+			padding-right:		1rem;
+			padding-bottom:		0.5rem;
+
 			float:				left;
 		}
 
@@ -34,7 +38,18 @@
 	<div class='grid-container'>
 		<div class='grid-x'>
 			<div class='small-12 cell'>
-				<div id='container'></div>
+				<div id='chart-history'></div>
+			</div>
+		</div>
+
+		<hr />
+
+		<div class='grid-x'>
+			<div class='small-12 large-6 cell'>
+				<div id='chart-totals'></div>
+			</div>
+			<div class='small-12 large-6 cell'>
+				<div id='chart-distribution'></div>
 			</div>
 		</div>
 
@@ -49,7 +64,9 @@
 	</div>
 
 	<script src='https://code.jquery.com/jquery-3.1.1.min.js'></script>
+	<script src='https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js'></script>
 	<script src='https://code.highcharts.com/stock/highstock.js'></script>
+	<script src='https://code.highcharts.com/highcharts-more.js'></script>
 	<script src='http://code.highcharts.com/modules/exporting.js'></script>
 	<script src='./scripts/app.js' type='text/javascript'></script>
 	

@@ -28,7 +28,8 @@
 /*** Set variables ***/
 	$api_url  = 'https://api.coinmarketcap.com/v1/ticker/';
 	$response = array();
-	$output   = array();
+	$history  = array();
+	$totals   = array();
 	$data     = array();
 	$sql      = array();
 
@@ -78,7 +79,6 @@
 				DISTINCT (transactions.label)
 			FROM
 				transactions
-			WHERE 1 = 1
 			ORDER BY
 				transactions.label ASC
 		";
@@ -168,24 +168,97 @@
 				ORDER BY
 					intervals.timestamp ASC
 			";
-			$data[$transaction] = $database->query($sql['get_history_'.$transaction])->fetchAll(PDO::FETCH_ASSOC);
+			$data['history_'.$transaction] = $database->query($sql['get_history_'.$transaction])->fetchAll(PDO::FETCH_ASSOC);
 
-			if(!empty($data[$transaction])){
-				// Set output
-				$output[$transaction]         = array();
-				$output[$transaction]['name'] = $data[$transaction][0]['name'];
-				$output[$transaction]['data'] = array();
+			if(!empty($data['history_'.$transaction])){
+				// Set history
+				$history[$transaction]         = array();
+				$history[$transaction]['name'] = $data['history_'.$transaction][0]['name'];
+				$history[$transaction]['data'] = array();
 
 				// Loop trough transactions
-				foreach($data[$transaction] as $key => $value){
-					$output[$transaction]['data'][] = array((int)$value['timestamp'], (float)$value['value'], (float)$value['amount']);
+				foreach($data['history_'.$transaction] as $key => $value){
+					$history[$transaction]['data'][] = array(
+						(int)$value['timestamp'], 
+						(float)$value['value'], 
+						(float)$value['amount']
+					);
 				}
+			}
+
+			// Get history
+			$sql['get_totals_'.$transaction] = "
+				SELECT 
+					markets.label,
+					markets.name,
+					UNIX_TIMESTAMP(intervals.timestamp) * 1000   AS timestamp,
+					MIN(markets.price_eur)                       AS minimum,
+					MAX(markets.price_eur)                       AS maximum,
+					AVG(markets.price_eur)                       AS average,
+					(
+						SELECT 
+							SUM(transactions.amount) 
+						FROM 
+							transactions 
+						WHERE 1 = 1
+							AND transactions.label  = '".$transaction."'
+							AND markets.timestamp  >= transactions.timestamp
+						GROUP BY 
+							transactions.label
+					) AS amount
+				FROM
+					intervals
+				LEFT JOIN 
+					markets
+				ON 
+					intervals.timestamp      = markets.timestamp
+					AND markets.label        = '".$transaction."'
+				LEFT JOIN
+					transactions
+				ON 
+					markets.label            = transactions.label
+					AND markets.timestamp   >= transactions.timestamp
+				WHERE 1 = 1
+					AND intervals.timestamp <= NOW()
+				GROUP BY 
+					DATE(intervals.timestamp)
+				ORDER BY
+					intervals.timestamp ASC
+			";
+			$data[$transaction] = $database->query($sql['get_totals_'.$transaction])->fetchAll(PDO::FETCH_ASSOC);
+
+			// Rebuild data
+			foreach($data[$transaction] as $value){
+				// Set row
+				$data['totals'][$value['timestamp']]['timestamp'] = (int)$value['timestamp'];
+				$data['totals'][$value['timestamp']]['minimum']   = !empty($data['totals'][$value['timestamp']]['minimum']) ? $data['totals'][$value['timestamp']]['minimum'] + ($value['amount'] * $value['minimum']) : $value['amount'] * $value['minimum'];
+				$data['totals'][$value['timestamp']]['maximum']   = !empty($data['totals'][$value['timestamp']]['maximum']) ? $data['totals'][$value['timestamp']]['maximum'] + ($value['amount'] * $value['maximum']) : $value['amount'] * $value['maximum'];
+				$data['totals'][$value['timestamp']]['average']   = !empty($data['totals'][$value['timestamp']]['average']) ? $data['totals'][$value['timestamp']]['average'] + ($value['amount'] * $value['average']) : $value['amount'] * $value['average'];
 			}
 		}
 
+		// Rebuild data
+		foreach($data['totals'] as $key => $value){
+			$totals['averages'][] = array(
+				(int)$value['timestamp'],
+				(int)$value['average']
+			);
+
+			$totals['ranges'][] = array(
+				(int)$value['timestamp'],
+				(int)$value['minimum'],
+				(int)$value['maximum']
+			);
+		}
+
 		// Write JSON
-		$fp = fopen('data/data.json', 'w');
-		fwrite($fp, json_encode($output));
+		$fp = fopen('data/data-history.json', 'w');
+		fwrite($fp, json_encode($history));
+		fclose($fp);
+
+		// Write JSON
+		$fp = fopen('data/data-totals.json', 'w');
+		fwrite($fp, json_encode($totals));
 		fclose($fp);
 
 		// Close connection

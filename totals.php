@@ -137,7 +137,7 @@ print_r($data);
 <head>
 	<meta charset='utf-8'>
 	<meta name='viewport' content='width=device-width, initial-scale=1.0' />
-	<link href='style/foundation/foundation.min.css' rel='stylesheet' type='text/css' media='screen' />
+	<link href='https://cdnjs.cloudflare.com/ajax/libs/foundation/6.4.3/css/foundation.min.css'  rel='stylesheet' />
 	<style>
 		html,
 		body {
