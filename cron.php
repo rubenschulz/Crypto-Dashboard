@@ -70,7 +70,7 @@
 /*** Databaase ***/
 	try {
 		// Connect to database
-		$database = new PDO('mysql:host='.DATABASE_HOST.';dbname='.DATABASE_NAME, DATABASE_USERNAME, DATABASE_PASSWORD);
+		$database = new PDO('mysql:charset=utf8mb4;host='.DATABASE_HOST.';dbname='.DATABASE_NAME, DATABASE_USERNAME, DATABASE_PASSWORD);
 		$database->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 		// Get transactions
@@ -251,14 +251,31 @@
 			);
 		}
 
-		// Write JSON
-		$fp = fopen('data/data-history.json', 'w');
-		fwrite($fp, json_encode($history));
-		fclose($fp);
+		// Build JSON
+		$prefix       = ''; 
+		$history_json = '[';  
+		foreach($history as $row){
+			$history_json .= $prefix.json_encode($row);
+			$prefix        = ','; 
+		} 
+		$history_json .= ']';
 
 		// Write JSON
-		$fp = fopen('data/data-totals.json', 'w');
-		fwrite($fp, json_encode($totals));
+		$fp = fopen(__DIR__.'/data/data-history.json', 'w');
+		fwrite($fp, $history_json);
+		fclose($fp);
+
+		// Build JSON
+		$prefix       = ''; 
+		$totals_json  = '';  
+		foreach($totals as $row){
+			$totals_json  .= $prefix.json_encode($row);
+			$prefix        = ','; 
+		} 
+
+		// Write JSON
+		$fp = fopen(__DIR__.'/data/data-totals.json', 'w');
+		fwrite($fp, $totals_json);
 		fclose($fp);
 
 		// Close connection

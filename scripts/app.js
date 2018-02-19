@@ -43,18 +43,15 @@
 
 				// Set chart options
 				title: {
-					text: 'Crypto Dashboard'
-				},
-				subtitle: {
-					text: 'To the moooon!'
+					text: 'Historical value'
 				},
 				chart: {
-					height: 700
+					height: 500 + (historySeries.length * 30)
 				},
 				credits: {
 					enabled: false
-				},          
-
+				},   
+				
 				// Set axis options
 				yAxis: {
 					labels: {
@@ -143,9 +140,6 @@
 							maxWidth: 640
 						},
 						chartOptions: {
-							chart: {
-								height: 650
-							},
 							rangeSelector : {
 								inputEnabled:false
 							},
@@ -182,7 +176,13 @@
 
 				// Set tooltip options
 				tooltip: {
-					pointFormat: '{series.name}: <strong>{point.percentage:.1f}%</strong>'
+					formatter:function(){
+						tooltip_html  = '<strong>'+this.point.name+'</strong><br />';
+						tooltip_html += Highcharts.numberFormat(this.point.percentage, 2)+'%<br/>';
+						tooltip_html += '€ '+Highcharts.numberFormat(this.point.y, 2, ',', '.');
+
+						return tooltip_html;
+					}
 				},
 
    				// Set plot options

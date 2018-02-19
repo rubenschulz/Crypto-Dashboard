@@ -38,6 +38,9 @@
 	<div class='grid-container'>
 		<div class='grid-x'>
 			<div class='small-12 cell'>
+				<h1>Crypto dashboard</h1>
+			</div>
+			<div class='small-12 cell'>
 				<div id='chart-history'></div>
 			</div>
 		</div>
@@ -67,7 +70,7 @@
 	<script src='https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js'></script>
 	<script src='https://code.highcharts.com/stock/highstock.js'></script>
 	<script src='https://code.highcharts.com/highcharts-more.js'></script>
-	<script src='http://code.highcharts.com/modules/exporting.js'></script>
+	<script src='https://code.highcharts.com/modules/exporting.js'></script>
 	<script src='./scripts/app.js' type='text/javascript'></script>
 	
 </body>
